@@ -14,7 +14,8 @@ defmodule PostsWeb.CommentView do
     %{
       id: comment.id,
       body: comment.body,
-      author: comment.author
+      author: comment.author,
+      post_id: comment.post_id
     }
   end
 end

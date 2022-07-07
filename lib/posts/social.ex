@@ -104,17 +104,9 @@ defmodule Posts.Social do
 
   alias Posts.Social.Comment
 
-  @doc """
-  Returns the list of comments.
-
-  ## Examples
-
-      iex> list_comments()
-      [%Comment{}, ...]
-
-  """
-  def list_comments do
-    Repo.all(Comment)
+  def list_comments(post) do
+    query = from(Comment, where: [post_id: ^post])
+    Repo.all(query)
   end
 
   @doc """
@@ -131,7 +123,10 @@ defmodule Posts.Social do
       ** (Ecto.NoResultsError)
 
   """
-  def get_comment!(id), do: Repo.get!(Comment, id)
+  def get_comment!(post_id, comment_id) do
+    query = from(Comment, where: [post_id: ^post_id, id: ^comment_id])
+    Repo.one!(query)
+  end
 
   @doc """
   Creates a comment.
@@ -145,7 +140,9 @@ defmodule Posts.Social do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_comment(attrs \\ %{}) do
+  def create_comment(post, attrs \\ %{}) do
+    attrs = Map.put(attrs, "post_id", post)
+
     %Comment{}
     |> Comment.changeset(attrs)
     |> Repo.insert()
@@ -163,7 +160,9 @@ defmodule Posts.Social do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_comment(%Comment{} = comment, attrs) do
+  def update_comment(post, %Comment{} = comment, attrs) do
+    attrs = Map.put(attrs, "post_id", post)
+
     comment
     |> Comment.changeset(attrs)
     |> Repo.update()
@@ -181,8 +180,9 @@ defmodule Posts.Social do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_comment(%Comment{} = comment) do
-    Repo.delete(comment)
+  def delete_comment(post, comment) do
+    query = from(Comment, where: [post_id: ^post, id: ^comment])
+    Repo.delete_all(query)
   end
 
   @doc """

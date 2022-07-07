@@ -27,11 +27,10 @@ defmodule PostsWeb.Router do
 
     get "/openapi", OpenApiSpex.Plug.RenderSpec, []
 
-    resources "/posts", PostsWeb.PostController,
-      except: [:new, :edit] do
-        resources "/comments", PostsWeb.CommentController,
-          param: "comment_id",
-          except: [:new, :edit]
+    resources "/posts", PostsWeb.PostController, except: [:new, :edit] do
+      resources "/comments", PostsWeb.CommentController,
+        param: "comment_id",
+        except: [:new, :edit]
     end
   end
 

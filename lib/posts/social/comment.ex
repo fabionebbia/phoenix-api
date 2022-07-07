@@ -13,7 +13,7 @@ defmodule Posts.Social.Comment do
   @doc false
   def changeset(comment, attrs) do
     comment
-    |> cast(attrs, [:body, :author])
-    |> validate_required([:body, :author])
+    |> cast(attrs, [:body, :author, :post_id])
+    |> validate_required([:body, :author, :post_id])
   end
 end
