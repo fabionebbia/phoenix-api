@@ -25,8 +25,14 @@ defmodule PostsWeb.Router do
   scope "/api" do
     pipe_through :api
 
-    resources "/posts", PostsWeb.PostController, except: [:new, :edit]
     get "/openapi", OpenApiSpex.Plug.RenderSpec, []
+
+    resources "/posts", PostsWeb.PostController,
+      except: [:new, :edit] do
+        resources "/comments", PostsWeb.CommentController,
+          param: "comment_id",
+          except: [:new, :edit]
+    end
   end
 
   # Other scopes may use custom stacks.

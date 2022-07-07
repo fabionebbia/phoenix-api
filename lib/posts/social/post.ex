@@ -6,6 +6,7 @@ defmodule Posts.Social.Post do
     field :author, :integer
     field :body, :string
     field :title, :string
+    has_many :comments, Posts.Social.Comment
 
     timestamps()
   end

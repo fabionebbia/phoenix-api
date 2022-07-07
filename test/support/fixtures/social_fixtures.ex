@@ -19,4 +19,19 @@ defmodule Posts.SocialFixtures do
 
     post
   end
+
+  @doc """
+  Generate a comment.
+  """
+  def comment_fixture(attrs \\ %{}) do
+    {:ok, comment} =
+      attrs
+      |> Enum.into(%{
+        author: 42,
+        body: "some body"
+      })
+      |> Posts.Social.create_comment()
+
+    comment
+  end
 end
