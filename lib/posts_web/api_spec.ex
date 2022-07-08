@@ -15,7 +15,12 @@ defmodule PostsWeb.ApiSpec do
         version: "1.0"
       },
       # Populate the paths from a phoenix router
-      paths: Paths.from_router(Router)
+      paths: Paths.from_router(Router),
+      components: %Components{
+        links: %{
+          "ciao" => %OpenApiSpex.Link{description: "we"}
+        }
+      }
     }
     # Discover request/response schemas from path specs
     |> OpenApiSpex.resolve_schema_modules()

@@ -4,14 +4,18 @@ defmodule PostsWeb.PostView do
   alias PostsWeb.Endpoint
   alias PostsWeb.Router.Helpers, as: Routes
 
+  def render("index.json", %{posts: []}) do
+    %{data: render_many([], PostView, "post.json")}
+  end
+
   def render("index.json", %{posts: posts, params: params}) do
     {min, max} =
       posts
       |> Enum.map(fn post -> Map.get(post, :id) end)
       |> Enum.min_max()
 
-    params_prev = Map.put(params, :prev, min) |> Map.delete("next") |> IO.inspect()
-    params_next = Map.put(params, :next, max) |> Map.delete("prev") |> IO.inspect()
+    params_prev = Map.put(params, :before, min) |> Map.delete("after")
+    params_next = Map.put(params, :after, max) |> Map.delete("before")
 
     %{
       data: render_many(posts, PostView, "post.json"),

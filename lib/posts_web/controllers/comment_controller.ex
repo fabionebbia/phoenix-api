@@ -25,27 +25,34 @@ defmodule PostsWeb.CommentController do
       size: [
         in: :query,
         type: %Schema{type: :integer, minimum: 0},
-        description: "The maximum number of posts to include per page",
+        description: "The maximum number of comments to include per page",
         example: 10,
         required: false
       ],
-      prev: [
+      before: [
         in: :query,
         type: %Schema{type: :integer, minimum: 0},
-        description: "The cursor used to retrieve posts that come before the given post id",
+        description: "The cursor used to retrieve comments that come before the given comment id",
         example: 3451,
         required: false
       ],
-      next: [
+      after: [
         in: :query,
         type: %Schema{type: :integer, minimum: 0},
-        description: "The cursor used to retrieve posts that come after the given post id",
+        description: "The cursor used to retrieve comments that come after the given comment id",
         example: 3451,
         required: false
       ]
     ],
     responses: [
-      ok: {"Comment List Response", "application/json", Schemas.CommentsResponse}
+      # ok: {"Comment List Response", "application/json", Schemas.CommentsResponse},
+      ok: %OpenApiSpex.Response{
+        description: "Comment List Response",
+        content: %{
+
+        }
+        # links:
+      }
     ]
 
   def index(conn, %{"post_id" => post} = params) do

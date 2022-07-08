@@ -4,6 +4,10 @@ defmodule PostsWeb.CommentView do
   alias PostsWeb.Endpoint
   alias PostsWeb.Router.Helpers, as: Routes
 
+  def render("index.json", %{comments: []}) do
+    %{data: render_many([], CommentView, "comment.json")}
+  end
+
   def render("index.json", %{comments: comments, params: params}) do
     {min, max} =
       comments
@@ -12,8 +16,8 @@ defmodule PostsWeb.CommentView do
 
     post_id = Map.get(params, "post_id")
     params = Map.delete(params, "post_id")
-    params_prev = Map.put(params, :prev, min) |> Map.delete("next")
-    params_next = Map.put(params, :next, max) |> Map.delete("prev")
+    params_prev = Map.put(params, :before, min) |> Map.delete("after")
+    params_next = Map.put(params, :after, max) |> Map.delete("before")
 
     %{
       data: render_many(comments, CommentView, "comment.json"),

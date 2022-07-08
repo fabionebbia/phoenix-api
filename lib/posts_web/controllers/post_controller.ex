@@ -22,14 +22,14 @@ defmodule PostsWeb.PostController do
         example: 10,
         required: false
       ],
-      prev: [
+      before: [
         in: :query,
         type: %Schema{type: :integer, minimum: 0},
         description: "The cursor used to retrieve posts that come before the given post id",
         example: 3451,
         required: false
       ],
-      next: [
+      after: [
         in: :query,
         type: %Schema{type: :integer, minimum: 0},
         description: "The cursor used to retrieve posts that come after the given post id",
@@ -39,10 +39,7 @@ defmodule PostsWeb.PostController do
     ],
     responses: [
       ok: {"Post List Response", "application/json", Schemas.PostsResponse}
-    ],
-    links: %{
-      wqer: %OpenApiSpex.Link{description: "oibò"}
-    }
+    ]
 
   def index(conn, params) do
     posts = Social.list_posts(params)
