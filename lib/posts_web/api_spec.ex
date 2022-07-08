@@ -1,5 +1,5 @@
 defmodule PostsWeb.ApiSpec do
-  alias OpenApiSpex.{Components, Info, OpenApi, Paths, Server}
+  alias OpenApiSpex.{Components, Info, OpenApi, Paths, Server, Response}
   alias PostsWeb.{Endpoint, Router}
   @behaviour OpenApi
 
@@ -24,5 +24,22 @@ defmodule PostsWeb.ApiSpec do
     }
     # Discover request/response schemas from path specs
     |> OpenApiSpex.resolve_schema_modules()
+  end
+
+  def common_read_responses(responses) do
+    responses
+  end
+
+  def common_write_responses(responses) do
+    responses
+  end
+
+  def response(responses, status) when is_map(responses) and is_integer(status) do
+    responses
+    |> Map.put_new(status, response(status))
+  end
+
+  def response(404) do
+    %Response{description: "Not found"}
   end
 end

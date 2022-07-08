@@ -23,7 +23,7 @@ defmodule Posts.Social do
     query =
       case params do
         %{"before" => cursor} -> from p in Post, where: p.id < ^cursor
-        %{"after" => cursor}  -> from p in Post, where: p.id > ^cursor
+        %{"after" => cursor} -> from p in Post, where: p.id > ^cursor
         _ -> from(p in Post)
       end
 
