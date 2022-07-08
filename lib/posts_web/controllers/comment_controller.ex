@@ -21,6 +21,27 @@ defmodule PostsWeb.CommentController do
         description: "The post id",
         example: 3245,
         required: true
+      ],
+      size: [
+        in: :query,
+        type: %Schema{type: :integer, minimum: 0},
+        description: "The maximum number of posts to include per page",
+        example: 10,
+        required: false
+      ],
+      prev: [
+        in: :query,
+        type: %Schema{type: :integer, minimum: 0},
+        description: "The cursor used to retrieve posts that come before the given post id",
+        example: 3451,
+        required: false
+      ],
+      next: [
+        in: :query,
+        type: %Schema{type: :integer, minimum: 0},
+        description: "The cursor used to retrieve posts that come after the given post id",
+        example: 3451,
+        required: false
       ]
     ],
     responses: [
@@ -29,13 +50,14 @@ defmodule PostsWeb.CommentController do
 
   def index(conn, %{"post_id" => post} = params) do
     comments = Social.list_comments(post, params)
-    render(conn, "index.json", comments: comments)
+    render(conn, "index.json", comments: comments, params: params)
   end
 
   operation :create,
     summary: "Create a comment",
     description: "Create a new comment on a post",
-    request_body: {"The comment attributes", "application/json", Schemas.CommentRequest, required: true},
+    request_body:
+      {"The comment attributes", "application/json", Schemas.CommentRequest, required: true},
     responses: [
       created: {"Comment", "application/json", Schemas.CommentResponse}
     ]
@@ -96,7 +118,8 @@ defmodule PostsWeb.CommentController do
         required: true
       ]
     ],
-    request_body: {"The post attributes", "application/json", Schemas.PostRequest, required: true},
+    request_body:
+      {"The post attributes", "application/json", Schemas.PostRequest, required: true},
     responses: [
       ok: {"Post", "application/json", Schemas.PostResponse}
     ]
@@ -110,25 +133,26 @@ defmodule PostsWeb.CommentController do
   end
 
   operation :delete,
-  summary: "Delete comment",
-  description: "Delete a comment by post id and comment id",
-  parameters: [
-    post_id: [
-      in: :path,
-      type: %Schema{type: :integer, minimum: 1},
-      description: "The post id",
-      example: 3245,
-      required: true
+    summary: "Delete comment",
+    description: "Delete a comment by post id and comment id",
+    parameters: [
+      post_id: [
+        in: :path,
+        type: %Schema{type: :integer, minimum: 1},
+        description: "The post id",
+        example: 3245,
+        required: true
+      ],
+      comment_id: [
+        in: :path,
+        type: %Schema{type: :integer, minimum: 1},
+        description: "The comment id",
+        example: 64,
+        required: true
+      ]
     ],
-    comment_id: [
-      in: :path,
-      type: %Schema{type: :integer, minimum: 1},
-      description: "The comment id",
-      example: 64,
-      required: true
-    ]
-  ],
-  responses: [] # TODO
+    # TODO
+    responses: []
 
   def delete(conn, %{"post_id" => post, "comment_id" => comment}) do
     with {1, nil} <- Social.delete_comment(post, comment) do

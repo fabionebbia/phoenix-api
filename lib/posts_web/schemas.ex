@@ -2,6 +2,18 @@ defmodule PostsWeb.Schemas do
   require OpenApiSpex
   alias OpenApiSpex.Schema
 
+  defmodule Links do
+    OpenApiSpex.schema(%{
+      type: :object,
+      description: "Links for pagination",
+      properties: %{
+        prev: %Schema{type: :string, description: "The previous page"},
+        next: %Schema{type: :string, description: "The next page"}
+      },
+      required: [:prev, :next],
+    })
+  end
+
   defmodule Post do
     OpenApiSpex.schema(%{
       title: "Post",
@@ -16,7 +28,7 @@ defmodule PostsWeb.Schemas do
       required: [:title, :body, :author],
       example: %{
         "id" => 1,
-        "author" => 236578,
+        "author" => 236_578,
         "title" => "My post title",
         "body" => "My post body"
       }
@@ -34,7 +46,7 @@ defmodule PostsWeb.Schemas do
       required: [:post],
       example: %{
         "post" => %{
-          "author" => 234853,
+          "author" => 234_853,
           "title" => "Post title",
           "body" => "Post body"
         }
@@ -53,7 +65,7 @@ defmodule PostsWeb.Schemas do
       example: %{
         "data" => %{
           "id" => 1,
-          "author" => 236578,
+          "author" => 236_578,
           "title" => "My post title",
           "body" => "My post body"
         }
@@ -67,22 +79,28 @@ defmodule PostsWeb.Schemas do
       description: "Response schema for multiple posts",
       type: :object,
       properties: %{
-        data: %Schema{description: "The posts details", type: :array, items: Post}
+        data: %Schema{description: "The posts details", type: :array, items: Post},
+        links: %Schema{
+          description: "The previous and next page links", type: :object, allOf: [Links]
+        }
+      },
+      links: %{
+        we: %OpenApiSpex.Link{description: "we"}
       },
       example: %{
         "data" => [
           %{
             "id" => 1,
-            "author" => 236578,
+            "author" => 236_578,
             "title" => "My post title",
             "body" => "My post body"
           },
           %{
             "id" => 2,
-            "author" => 548484,
+            "author" => 548_484,
             "title" => "Another post title",
             "body" => "Yet another post body"
-          },
+          }
         ]
       }
     })
@@ -103,7 +121,7 @@ defmodule PostsWeb.Schemas do
       example: %{
         "id" => 1,
         "post_id" => 2345,
-        "author" => 236578,
+        "author" => 236_578,
         "body" => "My comment body"
       }
     })
@@ -120,7 +138,7 @@ defmodule PostsWeb.Schemas do
       required: [:comment],
       example: %{
         "comment" => %{
-          "author" => 234853,
+          "author" => 234_853,
           "body" => "Comment body"
         }
       }
@@ -139,7 +157,7 @@ defmodule PostsWeb.Schemas do
         "data" => %{
           "id" => 1,
           "post_id" => 2345,
-          "author" => 236578,
+          "author" => 236_578,
           "body" => "My comment body"
         }
       }
@@ -152,25 +170,27 @@ defmodule PostsWeb.Schemas do
       description: "Response schema for multiple comments",
       type: :object,
       properties: %{
-        data: %Schema{description: "The comments details", type: :array, items: Comment}
+        data: %Schema{description: "The comments details", type: :array, items: Comment},
+        links: %Schema{
+          description: "The previous and next page links", type: :object, allOf: [Links]
+        }
       },
       example: %{
         "data" => [
           %{
             "id" => 1,
             "post_id" => 2345,
-            "author" => 236578,
+            "author" => 236_578,
             "body" => "My comment body"
           },
           %{
             "id" => 2,
             "post_id" => 2345,
-            "author" => 854567,
+            "author" => 854_567,
             "body" => "Another comment body"
-          },
+          }
         ]
       }
     })
   end
-
 end

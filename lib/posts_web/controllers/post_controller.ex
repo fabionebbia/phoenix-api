@@ -14,21 +14,47 @@ defmodule PostsWeb.PostController do
   operation :index,
     summary: "Lists posts",
     description: "Lists all posts",
-    request_body: {},
+    parameters: [
+      size: [
+        in: :query,
+        type: %Schema{type: :integer, minimum: 0},
+        description: "The maximum number of posts to include per page",
+        example: 10,
+        required: false
+      ],
+      prev: [
+        in: :query,
+        type: %Schema{type: :integer, minimum: 0},
+        description: "The cursor used to retrieve posts that come before the given post id",
+        example: 3451,
+        required: false
+      ],
+      next: [
+        in: :query,
+        type: %Schema{type: :integer, minimum: 0},
+        description: "The cursor used to retrieve posts that come after the given post id",
+        example: 3451,
+        required: false
+      ]
+    ],
     responses: [
       ok: {"Post List Response", "application/json", Schemas.PostsResponse}
-    ]
+    ],
+    links: %{
+      wqer: %OpenApiSpex.Link{description: "oibò"}
+    }
 
   def index(conn, params) do
     posts = Social.list_posts(params)
-    render(conn, "index.json", posts: posts)
+    render(conn, "index.json", posts: posts, params: params)
   end
 
   operation :create,
     summary: "Create a post",
     description: "Create a new post",
     parameters: [],
-    request_body: {"The post attributes", "application/json", Schemas.PostRequest, required: true},
+    request_body:
+      {"The post attributes", "application/json", Schemas.PostRequest, required: true},
     responses: [
       created: {"Post", "application/json", Schemas.PostResponse}
     ]
@@ -75,7 +101,8 @@ defmodule PostsWeb.PostController do
         required: true
       ]
     ],
-    request_body: {"The post attributes", "application/json", Schemas.PostRequest, required: true},
+    request_body:
+      {"The post attributes", "application/json", Schemas.PostRequest, required: true},
     responses: [
       ok: {"Post", "application/json", Schemas.PostResponse}
     ]
@@ -100,7 +127,8 @@ defmodule PostsWeb.PostController do
         required: true
       ]
     ],
-    responses: [] # TODO
+    # TODO
+    responses: []
 
   def delete(conn, %{"id" => id}) do
     post = Social.get_post!(id)

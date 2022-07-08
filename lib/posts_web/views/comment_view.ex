@@ -1,9 +1,27 @@
 defmodule PostsWeb.CommentView do
   use PostsWeb, :view
   alias PostsWeb.CommentView
+  alias PostsWeb.Endpoint
+  alias PostsWeb.Router.Helpers, as: Routes
 
-  def render("index.json", %{comments: comments}) do
-    %{data: render_many(comments, CommentView, "comment.json")}
+  def render("index.json", %{comments: comments, params: params}) do
+    {min, max} =
+      comments
+      |> Enum.map(fn comment -> Map.get(comment, :id) end)
+      |> Enum.min_max()
+
+    post_id = Map.get(params, "post_id")
+    params = Map.delete(params, "post_id")
+    params_prev = Map.put(params, :prev, min) |> Map.delete("next")
+    params_next = Map.put(params, :next, max) |> Map.delete("prev")
+
+    %{
+      data: render_many(comments, CommentView, "comment.json"),
+      links: %{
+        prev: "#{Routes.post_comment_path(Endpoint, :index, post_id, params_prev)}",
+        next: "#{Routes.post_comment_path(Endpoint, :index, post_id, params_next)}"
+      }
+    }
   end
 
   def render("show.json", %{comment: comment}) do
