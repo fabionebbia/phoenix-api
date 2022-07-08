@@ -8,6 +8,8 @@ defmodule Posts.Social do
 
   alias Posts.Social.Post
 
+  @default_page_size 5
+
   @doc """
   Returns the list of posts.
 
@@ -17,8 +19,17 @@ defmodule Posts.Social do
       [%Post{}, ...]
 
   """
-  def list_posts do
-    Repo.all(Post)
+  def list_posts(params) do
+    query =
+      case params do
+        %{"after" => cursor}  -> from p in Post, where: p.id > ^cursor
+        %{"before" => cursor} -> from p in Post, where: p.id < ^cursor
+        _                     -> from p in Post
+      end
+
+    size = Map.get(params, "size", @default_page_size)
+    query = limit(query, ^size)
+    Repo.all(query)
   end
 
   @doc """
@@ -104,8 +115,16 @@ defmodule Posts.Social do
 
   alias Posts.Social.Comment
 
-  def list_comments(post) do
-    query = from(Comment, where: [post_id: ^post])
+  def list_comments(post, params) do
+    query =
+      case params do
+        %{"after" => cursor}  -> from c in Comment, where: c.post_id == ^ post and c.id > ^cursor
+        %{"before" => cursor} -> from c in Comment, where: c.post_id == ^ post and c.id < ^cursor
+        _                     -> from c in Comment, where: c.post_id == ^ post
+      end
+
+    size = Map.get(params, "size", @default_page_size)
+    query = limit(query, ^size)
     Repo.all(query)
   end
 

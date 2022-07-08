@@ -1,6 +1,7 @@
 defmodule Posts.Social.Post do
   use Ecto.Schema
   import Ecto.Changeset
+  require OpenApiSpex
 
   schema "posts" do
     field :author, :integer

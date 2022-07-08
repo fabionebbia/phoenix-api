@@ -1,15 +1,44 @@
 defmodule PostsWeb.CommentController do
   use PostsWeb, :controller
+  use OpenApiSpex.ControllerSpecs
 
   alias Posts.Social
   alias Posts.Social.Comment
+  alias OpenApiSpex.Schema
+  alias PostsWeb.Schemas
 
   action_fallback PostsWeb.FallbackController
 
-  def index(conn, %{"post_id" => post}) do
-    comments = Social.list_comments(post)
+  tags ["comments"]
+
+  operation :index,
+    summary: "Lists comments",
+    description: "Lists all comments on a post by id",
+    parameters: [
+      post_id: [
+        in: :path,
+        type: %Schema{type: :integer, minimum: 1},
+        description: "The post id",
+        example: 3245,
+        required: true
+      ]
+    ],
+    responses: [
+      ok: {"Comment List Response", "application/json", Schemas.CommentsResponse}
+    ]
+
+  def index(conn, %{"post_id" => post} = params) do
+    comments = Social.list_comments(post, params)
     render(conn, "index.json", comments: comments)
   end
+
+  operation :create,
+    summary: "Create a comment",
+    description: "Create a new comment on a post",
+    request_body: {"The comment attributes", "application/json", Schemas.CommentRequest, required: true},
+    responses: [
+      created: {"Comment", "application/json", Schemas.CommentResponse}
+    ]
 
   def create(conn, %{"post_id" => post, "comment" => comment_params}) do
     with {:ok, %Comment{} = comment} <- Social.create_comment(post, comment_params) do
@@ -20,10 +49,57 @@ defmodule PostsWeb.CommentController do
     end
   end
 
+  operation :show,
+    summary: "Show comment",
+    description: "Show a comment by post id and comment id",
+    parameters: [
+      post_id: [
+        in: :path,
+        type: %Schema{type: :integer, minimum: 1},
+        description: "The post id",
+        example: 3245,
+        required: true
+      ],
+      comment_id: [
+        in: :path,
+        type: %Schema{type: :integer, minimum: 1},
+        description: "The comment id",
+        example: 64,
+        required: true
+      ]
+    ],
+    responses: [
+      ok: {"Comment", "application/json", Schemas.CommentResponse}
+    ]
+
   def show(conn, %{"post_id" => post, "comment_id" => id}) do
     comment = Social.get_comment!(post, id)
     render(conn, "show.json", comment: comment)
   end
+
+  operation :update,
+    summary: "Update comment",
+    description: "Update a comment by post id and comment id",
+    parameters: [
+      post_id: [
+        in: :path,
+        type: %Schema{type: :integer, minimum: 1},
+        description: "The post id",
+        example: 3245,
+        required: true
+      ],
+      comment_id: [
+        in: :path,
+        type: %Schema{type: :integer, minimum: 1},
+        description: "The comment id",
+        example: 64,
+        required: true
+      ]
+    ],
+    request_body: {"The post attributes", "application/json", Schemas.PostRequest, required: true},
+    responses: [
+      ok: {"Post", "application/json", Schemas.PostResponse}
+    ]
 
   def update(conn, %{"post_id" => post, "comment_id" => comment_id, "comment" => comment_params}) do
     comment = Social.get_comment!(post, comment_id)
@@ -33,8 +109,29 @@ defmodule PostsWeb.CommentController do
     end
   end
 
+  operation :delete,
+  summary: "Delete comment",
+  description: "Delete a comment by post id and comment id",
+  parameters: [
+    post_id: [
+      in: :path,
+      type: %Schema{type: :integer, minimum: 1},
+      description: "The post id",
+      example: 3245,
+      required: true
+    ],
+    comment_id: [
+      in: :path,
+      type: %Schema{type: :integer, minimum: 1},
+      description: "The comment id",
+      example: 64,
+      required: true
+    ]
+  ],
+  responses: [] # TODO
+
   def delete(conn, %{"post_id" => post, "comment_id" => comment}) do
-    with {:ok, %Comment{}} <- Social.delete_comment(post, comment) do
+    with {1, nil} <- Social.delete_comment(post, comment) do
       send_resp(conn, :no_content, "")
     end
   end

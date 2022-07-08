@@ -34,11 +34,6 @@ defmodule PostsWeb.Router do
     end
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", PostsWeb do
-  #   pipe_through :api
-  # end
-
   # Enables LiveDashboard only for development
   #
   # If you want to use the LiveDashboard in production, you should put
