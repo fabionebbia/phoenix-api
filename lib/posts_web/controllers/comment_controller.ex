@@ -5,7 +5,7 @@ defmodule PostsWeb.CommentController do
   alias Posts.Social
   alias Posts.Social.Comment
   alias PostsWeb.ApiSpec
-  alias OpenApiSpex.{Operation, RequestBody, MediaType, Schema, Reference}
+  alias OpenApiSpex.{Schema, Operation, RequestBody, MediaType, Schema, Reference, Response, Link}
 
   action_fallback PostsWeb.FallbackController
 
@@ -73,17 +73,57 @@ defmodule PostsWeb.CommentController do
       ],
       responses:
         %{
-          200 =>
-            Operation.response(
-              "CommentsList",
-              "application/json",
-              %Schema{
-                title: "CommentsList",
-                description: "List of comments",
-                type: :array,
-                items: %Reference{"$ref": "#/components/schemas/Comment"}
+          200 => %Response{
+            description: "CommentsList",
+            content: %{
+              "application/json" => %MediaType{
+                schema: %Schema{
+                  title: "CommentsList",
+                  description: "List of all the comments on some post",
+                  type: :object,
+                  properties: %{
+                    links: %Schema{
+                      title: "CommentsPaginationLinks",
+                      description: "Pagination links for comments",
+                      type: :object,
+                      properties: %{
+                        prev: %Schema{type: :string},
+                        next: %Schema{type: :string}
+                      },
+                      example: %{
+                        next: "/api/posts/2/commentss?after=5",
+                        prev: "/api/posts/2/commentss?before=8"
+                      }
+                    },
+                    data: %Schema{
+                      title: "CommentsList",
+                      description: "List of comments on some post",
+                      type: :array,
+                      items: %Reference{"$ref": "#/components/schemas/Comment"}
+                    }
+                  }
+                }
               }
-            )
+            },
+            links: %{
+              prev: %Link{
+                description: "Link to the previous page of posts",
+                operationId: "listPosts",
+                parameters: %{
+                  size: "The size of the page",
+                  before: "The cursor for the previous page"
+                }
+              },
+              next: %Link{
+                description: "Link to the next page of posts",
+                operationId: "listPosts",
+                parameters: %{
+                  size: "The size of the page",
+                  before: "The cursor for the next page"
+                }
+              }
+            }
+          }
         }
         |> ApiSpec.common_read_responses()
         |> ApiSpec.response(404)

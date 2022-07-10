@@ -69,12 +69,16 @@ defmodule PostsWeb.PostController do
                   type: :object,
                   properties: %{
                     links: %Schema{
-                      title: "Links",
-                      description: "Pagination links",
+                      title: "PostsPaginationLinks",
+                      description: "Pagination links for posts",
                       type: :object,
                       properties: %{
                         prev: %Schema{type: :string},
                         next: %Schema{type: :string}
+                      },
+                      example: %{
+                        next: "/api/posts?after=4",
+                        prev: "/api/posts?before=2"
                       }
                     },
                     data: %Schema{
@@ -88,8 +92,16 @@ defmodule PostsWeb.PostController do
               }
             },
             links: %{
-              previous: %Link{
-                description: "Link to the previous post page",
+              prev: %Link{
+                description: "Link to the previous page of posts",
+                operationId: "listPosts",
+                parameters: %{
+                  size: "The size of the page",
+                  before: "The cursor for the previous page"
+                }
+              },
+              next: %Link{
+                description: "Link to the next page of posts",
                 operationId: "listPosts",
                 parameters: %{
                   size: "The size of the page",
