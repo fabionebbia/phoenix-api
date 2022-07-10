@@ -5,7 +5,7 @@ defmodule PostsWeb.PostController do
   alias Posts.Social
   alias Posts.Social.Post
   alias PostsWeb.ApiSpec
-  alias OpenApiSpex.{Schema, Operation, RequestBody, MediaType, Schema, Reference}
+  alias OpenApiSpex.{Schema, Operation, RequestBody, MediaType, Schema, Reference, Response, Link}
 
   action_fallback PostsWeb.FallbackController
 
@@ -59,17 +59,45 @@ defmodule PostsWeb.PostController do
       operationId: "listPosts",
       responses:
         %{
-          200 =>
-            Operation.response(
-              "PostsList",
-              "application/json",
-              %Schema{
-                title: "PostsList",
-                description: "List of posts",
-                type: :array,
-                items: %Reference{"$ref": "#/components/schemas/Post"}
+          200 => %Response{
+            description: "PostsList",
+            content: %{
+              "application/json" => %MediaType{
+                schema: %Schema{
+                  title: "PostsList",
+                  description: "List of posts",
+                  type: :object,
+                  properties: %{
+                    links: %Schema{
+                      title: "Links",
+                      description: "Pagination links",
+                      type: :object,
+                      properties: %{
+                        prev: %Schema{type: :string},
+                        next: %Schema{type: :string}
+                      }
+                    },
+                    data: %Schema{
+                      title: "PostsList",
+                      description: "List of posts",
+                      type: :array,
+                      items: %Reference{"$ref": "#/components/schemas/Post"}
+                    }
+                  }
+                }
               }
-            )
+            },
+            links: %{
+              previous: %Link{
+                description: "Link to the previous post page",
+                operationId: "listPosts",
+                parameters: %{
+                  size: "The size of the page",
+                  before: "The cursor for the next page"
+                }
+              }
+            }
+          }
         }
         |> ApiSpec.common_read_responses()
         |> ApiSpec.response(404)
@@ -84,7 +112,7 @@ defmodule PostsWeb.PostController do
       description: "Show post details by id.",
       operationId: "showPost",
       parameters: [
-        Operation.parameter(:id, :path, :integer, "Post id")
+        Operation.parameter(:id, :path, :integer, "The post id")
       ],
       responses:
         %{
@@ -159,12 +187,7 @@ defmodule PostsWeb.PostController do
       description: "Delete an existing post by id",
       operationId: "deletePost",
       parameters: [
-        Operation.parameter(
-          :id,
-          :path,
-          :integer,
-          "Post id"
-        )
+        Operation.parameter(:id, :path, :integer, "The post id")
       ],
       responses:
         %{
