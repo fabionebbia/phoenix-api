@@ -91,8 +91,8 @@ defmodule PostsWeb.CommentController do
                         next: %Schema{type: :string}
                       },
                       example: %{
-                        next: "/api/posts/2/commentss?after=5",
-                        prev: "/api/posts/2/commentss?before=8"
+                        next: "/api/posts/2/comments?after=5",
+                        prev: "/api/posts/2/comments?before=8"
                       }
                     },
                     data: %Schema{

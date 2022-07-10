@@ -14,8 +14,8 @@ defmodule PostsWeb.PostView do
       |> Enum.map(fn post -> Map.get(post, :id) end)
       |> Enum.min_max()
 
-    params_prev = Map.put(params, :before, min) |> Map.delete("after")
-    params_next = Map.put(params, :after, max) |> Map.delete("before")
+    params_prev = Map.put(params, :before, min) |> Map.delete("after") |> IO.inspect()
+    params_next = Map.put(params, :after, max) |> Map.delete("before") |> IO.inspect()
 
     %{
       data: render_many(posts, PostView, "post.json"),

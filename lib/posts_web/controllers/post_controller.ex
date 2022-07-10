@@ -55,8 +55,23 @@ defmodule PostsWeb.PostController do
     %Operation{
       tags: ["posts"],
       summary: "Show all posts",
-      description: "Show all posts created by users.",
+      description: "Show all posts created by users",
       operationId: "listPosts",
+      parameters: [
+        Operation.parameter(:size, :query, :integer, "The number of posts to retrieve"),
+        Operation.parameter(
+          :before,
+          :query,
+          :integer,
+          "The cursor used to retrieve posts that come before the given comment id"
+        ),
+        Operation.parameter(
+          :after,
+          :query,
+          :integer,
+          "The cursor used to retrieve posts that come after the given comment id"
+        )
+      ],
       responses:
         %{
           200 => %Response{

@@ -1,5 +1,5 @@
 defmodule PostsWeb.ApiSpec do
-  alias OpenApiSpex.{Components, Info, OpenApi, Paths, Server, Response}
+  alias OpenApiSpex.{Info, OpenApi, Paths, Server, Response}
   alias PostsWeb.{Endpoint, Router}
   @behaviour OpenApi
 
@@ -15,12 +15,7 @@ defmodule PostsWeb.ApiSpec do
         version: "1.0"
       },
       # Populate the paths from a phoenix router
-      paths: Paths.from_router(Router),
-      components: %Components{
-        links: %{
-          "ciao" => %OpenApiSpex.Link{description: "we"}
-        }
-      }
+      paths: Paths.from_router(Router)
     }
     # Discover request/response schemas from path specs
     |> OpenApiSpex.resolve_schema_modules()

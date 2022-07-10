@@ -22,7 +22,7 @@ defmodule Posts.Social do
   def list_posts(params) do
     query =
       case params do
-        %{"before" => cursor} -> from p in Post, where: p.id < ^cursor
+        %{"before" => cursor} -> from p in Post, where: p.id < ^cursor, order_by: [desc: p.id]
         %{"after" => cursor} -> from p in Post, where: p.id > ^cursor
         _ -> from(p in Post)
       end
@@ -118,7 +118,7 @@ defmodule Posts.Social do
   def list_comments(post, params) do
     query =
       case params do
-        %{"before" => cursor} -> from c in Comment, where: c.post_id == ^post and c.id < ^cursor
+        %{"before" => cursor} -> from c in Comment, where: c.post_id == ^post and c.id < ^cursor, order_by: [desc: c.id]
         %{"after" => cursor} -> from c in Comment, where: c.post_id == ^post and c.id > ^cursor
         _ -> from c in Comment, where: c.post_id == ^post
       end
