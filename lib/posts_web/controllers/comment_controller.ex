@@ -130,29 +130,6 @@ defmodule PostsWeb.CommentController do
     }
   end
 
-  # operation :show,
-  #   summary: "Show a comment",
-  #   description: "Show a comment by post id and comment id",
-  #   parameters: [
-  #     post_id: [
-  #       in: :path,
-  #       type: %Schema{type: :integer, minimum: 1},
-  #       description: "The post id",
-  #       example: 3245,
-  #       required: true
-  #     ],
-  #     comment_id: [
-  #       in: :path,
-  #       type: %Schema{type: :integer, minimum: 1},
-  #       description: "The comment id",
-  #       example: 64,
-  #       required: true
-  #     ]
-  #   ],
-  #   responses: [
-  #     ok: {"Comment", "application/json", Schemas.CommentResponse}
-  #   ]
-
   @spec show_operation() :: Operation.t()
   def show_operation do
     %Operation{
@@ -179,6 +156,9 @@ defmodule PostsWeb.CommentController do
       tags: ["comments"],
       summary: "Create a comment on a post",
       description: "Create a comment on the post with the given id",
+      parameters: [
+        Operation.parameter(:post_id, :path, :integer, "The post id")
+      ],
       requestBody: %RequestBody{
         content: %{"application/json" => %MediaType{schema: PostsWeb.Schemas.Comment}},
         description: "Comment Object input data",

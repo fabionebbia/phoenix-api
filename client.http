@@ -1,0 +1,22 @@
+POST http://localhost:4000/api/posts HTTP/1.1
+content-type: application/json
+
+{
+    "post": {
+        "author": 0,
+        "title": "Quarto post",
+        "body": "Body"
+    }
+}
+
+###
+
+POST http://localhost:4000/api/posts/7/comments HTTP/1.1
+content-type: application/json
+
+{
+    "comment": {
+        "author": 0,
+        "body": "Primo commento al quarto post"
+    }
+}
